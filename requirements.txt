@@ -1,0 +1,7 @@
+flask
+flask-restx
+flask-jwt-extended
+flask-sqlalchemy
+python-dotenv
+pymysql
+waitress
