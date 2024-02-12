@@ -10,9 +10,10 @@ orm/ # 对象关系映射
     image.py # 图片模型
     album.py # 图集、图集图片关联模型
 resources/ # 资源
-    user.py # 用户、登录、登出、刷新令牌资源
-    image.py # 图片资源
-    album.py # 图集资源
+    users.py # 用户资源
+    images.py # 图片资源
+    albums.py # 图集资源
+    session.py # 会话资源
     util.py # 测试工具资源
 tests/ # 测试
     test_user.py
@@ -25,7 +26,7 @@ jwt_auth.py # 自定义 JWT 认证
 extensions.py # 创建 SQLAlchemy 和 Flask-RESTX 对象
 requirements.txt # 依赖
 .env.example # 环境变量示例
-Dockfile # Docker 镜像构建文件
+Dockerfile # Docker 镜像构建文件
 ```
 
 ## 运行

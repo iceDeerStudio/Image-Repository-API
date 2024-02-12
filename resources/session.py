@@ -27,7 +27,7 @@ class SessionResource(Resource):
     @session_namespace.response(500, "Internal Server Error", message_model)
     def post(self):
         """
-        Create a new session for a user
+        Login as a user
         ---
         This will create a new session for a user and return the access and refresh tokens
         """
@@ -56,6 +56,7 @@ class SessionResource(Resource):
         """
         Refresh the access token
         ---
+        !!! Refresh token required
         This will refresh the access token using the refresh token
         """
         new_token = create_access_token(identity=current_user, fresh=False)
@@ -68,8 +69,9 @@ class SessionResource(Resource):
     @session_namespace.response(500, "Internal Server Error", message_model)
     def delete(self):
         """
-        Logout the user
+        Logout a user
         ---
+        !!! Refresh token required
         This will blacklist the user's refresh token
         """
         jti = get_jwt()["jti"]
