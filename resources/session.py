@@ -17,7 +17,7 @@ session_namespace.add_model("Token", token_model)
 session_namespace.add_model("Message", message_model)
 
 
-@session_namespace.route("/")
+@session_namespace.route("")
 class SessionResource(Resource):
 
     @session_namespace.expect(login_parser)
