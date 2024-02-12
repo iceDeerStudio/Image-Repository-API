@@ -59,4 +59,4 @@ python tests/test_image.py
 python tests/test_album.py
 ```
 
-另请参阅 [Tests.md](tests.md)。
+另请参阅 [Tests.md](Tests.md)。
