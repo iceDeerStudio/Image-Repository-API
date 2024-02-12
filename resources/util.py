@@ -5,13 +5,13 @@ from orm.user import UserORM
 from models import message_model
 from extensions import db
 
-utils_namespace = Namespace("utils", description="Utility operations")
+util_namespace = Namespace("util", description="Utility operations")
 
-utils_namespace.add_model("Message", message_model)
+util_namespace.add_model("Message", message_model)
     
-@utils_namespace.route("/init")
+@util_namespace.route("/init")
 class Init(Resource):
-    @utils_namespace.response(200, "Success", message_model)
+    @util_namespace.response(200, "Success", message_model)
     def get(self):
         """
         Initialize database.
@@ -28,9 +28,9 @@ class Init(Resource):
             db.session.commit()
         return marshal({"message": "Database initialized"}, message_model), 200
     
-@utils_namespace.route("/drop")
+@util_namespace.route("/drop")
 class Drop(Resource):
-    @utils_namespace.response(200, "Success", message_model)
+    @util_namespace.response(200, "Success", message_model)
     def get(self):
         """
         Drop database.

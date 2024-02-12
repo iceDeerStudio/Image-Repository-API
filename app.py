@@ -1,8 +1,9 @@
 from flask import Flask
-from resources.user import user_namespace
-from resources.image import image_namespace
-from resources.album import album_namespace
-from resources.utils import utils_namespace
+from resources.users import users_namespace
+from resources.session import session_namespace
+from resources.images import images_namespace
+from resources.albums import albums_namespace
+from resources.util import util_namespace
 from extensions import db, api
 from jwt_auth import jwt
 
@@ -22,12 +23,13 @@ def create_app():
     api.init_app(app)
 
     # Add resources
-    api.add_namespace(user_namespace)
-    api.add_namespace(image_namespace)
-    api.add_namespace(album_namespace)
+    api.add_namespace(users_namespace)
+    api.add_namespace(session_namespace)
+    api.add_namespace(images_namespace)
+    api.add_namespace(albums_namespace)
     
     # Debug-only routes
     if app.config["DEBUG"]:
-        api.add_namespace(utils_namespace)
+        api.add_namespace(util_namespace)
         
     return app

@@ -13,13 +13,13 @@ class TestUserAPI(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # 在测试开始前重置数据库
-        requests.get(f"{cls.BASE_URL}/utils/drop")
-        requests.get(f"{cls.BASE_URL}/utils/init")
+        requests.get(f"{cls.BASE_URL}/util/drop")
+        requests.get(f"{cls.BASE_URL}/util/init")
 
     def test_01_register(self):
         global GLOBAL_USER_LOCATION
         response = requests.post(
-            f"{self.BASE_URL}/user",
+            f"{self.BASE_URL}/users",
             json={
                 "username": "test",
                 "nickname": "test",
@@ -33,7 +33,7 @@ class TestUserAPI(unittest.TestCase):
     def test_02_login(self):
         global GLOBAL_ACCESS_TOKEN, GLOBAL_REFRESH_TOKEN
         response = requests.post(
-            f"{self.BASE_URL}/user/login",
+            f"{self.BASE_URL}/session",
             json={"username": "test", "password": "test"},
         )
         self.assertEqual(response.status_code, 200)
@@ -57,8 +57,8 @@ class TestUserAPI(unittest.TestCase):
 
     def test_05_refresh_token(self):
         global GLOBAL_ACCESS_TOKEN, GLOBAL_REFRESH_TOKEN
-        response = requests.post(
-            f"{self.BASE_URL}/user/refresh",
+        response = requests.get(
+            f"{self.BASE_URL}/session",
             headers={"Authorization": f"Bearer {GLOBAL_REFRESH_TOKEN}"},
         )
         self.assertEqual(response.status_code, 200)
@@ -73,15 +73,15 @@ class TestUserAPI(unittest.TestCase):
         self.assertEqual(response.json()["nickname"], "test2")
 
     def test_07_logout(self):
-        response = requests.post(
-            f"{self.BASE_URL}/user/logout",
+        response = requests.delete(
+            f"{self.BASE_URL}/session",
             headers={"Authorization": f"Bearer {GLOBAL_REFRESH_TOKEN}"},
         )
         self.assertEqual(response.status_code, 200)
 
     def test_08_refresh_token_again(self):
-        response = requests.post(
-            f"{self.BASE_URL}/user/refresh",
+        response = requests.get(
+            f"{self.BASE_URL}/session",
             headers={"Authorization": f"Bearer {GLOBAL_REFRESH_TOKEN}"},
         )
         self.assertEqual(response.status_code, 401)
@@ -89,7 +89,7 @@ class TestUserAPI(unittest.TestCase):
     def test_09_login_as_admin(self):
         global GLOBAL_ACCESS_TOKEN, GLOBAL_REFRESH_TOKEN
         response = requests.post(
-            f"{self.BASE_URL}/user/login",
+            f"{self.BASE_URL}/session",
             json={"username": "admin", "password": "admin"},
         )
         self.assertEqual(response.status_code, 200)
@@ -112,7 +112,7 @@ class TestUserAPI(unittest.TestCase):
 
     def test_12_create_admin_user(self):
         response = requests.post(
-            f"{self.BASE_URL}/user",
+            f"{self.BASE_URL}/users",
             headers={"Authorization": f"Bearer {GLOBAL_ACCESS_TOKEN}"},
             json={
                 "username": "admin1",
@@ -124,15 +124,15 @@ class TestUserAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 201)
 
     def test_13_logout_as_admin(self):
-        response = requests.post(
-            f"{self.BASE_URL}/user/logout",
+        response = requests.delete(
+            f"{self.BASE_URL}/session",
             headers={"Authorization": f"Bearer {GLOBAL_REFRESH_TOKEN}"},
         )
         self.assertEqual(response.status_code, 200)
 
     def test_14_create_admin_user_without_permission(self):
         response = requests.post(
-            f"{self.BASE_URL}/user",
+            f"{self.BASE_URL}/users",
             json={
                 "username": "admin2",
                 "nickname": "admin2",

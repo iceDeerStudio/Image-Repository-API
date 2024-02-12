@@ -9,11 +9,11 @@ from sqlalchemy import or_
 import hashlib
 import os
 
-image_namespace = Namespace("image", description="Image operations")
+images_namespace = Namespace("images", description="Image operations")
 
-image_namespace.add_model("Image", image_model)
-image_namespace.add_model("ImagesList", images_list_model)
-image_namespace.add_model("Message", message_model)
+images_namespace.add_model("Image", image_model)
+images_namespace.add_model("ImagesList", images_list_model)
+images_namespace.add_model("Message", message_model)
 
 image_parser = reqparse.RequestParser()
 image_parser.add_argument(
@@ -29,21 +29,21 @@ image_parser.add_argument(
     help="Visibility of the image (0: public, 1: hidden, 2: private)",
 )
 
-file_parser = image_namespace.parser()
+file_parser = images_namespace.parser()
 file_parser.add_argument(
     "file", location="files", type=FileStorage, required=True, help="Image file"
 )
 
 
-@image_namespace.route("/<int:image_id>")
-@image_namespace.param("image_id", "The image identifier")
+@images_namespace.route("/<int:image_id>")
+@images_namespace.param("image_id", "The image identifier")
 class ImageResource(Resource):
 
     @jwt_required(optional=True)
-    @image_namespace.doc(security="Bearer Auth")
-    @image_namespace.response(200, "Success", image_model)
-    @image_namespace.response(403, "Permission denied", message_model)
-    @image_namespace.response(404, "Image not found", message_model)
+    @images_namespace.doc(security="Bearer Auth")
+    @images_namespace.response(200, "Success", image_model)
+    @images_namespace.response(403, "Permission denied", message_model)
+    @images_namespace.response(404, "Image not found", message_model)
     def get(self, image_id):
         """
         Get image by ID.
@@ -62,10 +62,10 @@ class ImageResource(Resource):
         return marshal(image.to_dict(), image_model), 200
 
     @jwt_required()
-    @image_namespace.doc(security="Bearer Auth")
-    @image_namespace.expect(image_parser)
-    @image_namespace.response(201, "Image created successfully", message_model)
-    @image_namespace.response(403, "Permission denied", message_model)
+    @images_namespace.doc(security="Bearer Auth")
+    @images_namespace.expect(image_parser)
+    @images_namespace.response(201, "Image created successfully", message_model)
+    @images_namespace.response(403, "Permission denied", message_model)
     def put(self, image_id):
         """
         Update image by ID.
@@ -85,10 +85,10 @@ class ImageResource(Resource):
         return marshal({"message": "Image updated successfully"}, message_model), 200
 
     @jwt_required()
-    @image_namespace.doc(security="Bearer Auth")
-    @image_namespace.response(200, "Image deleted", message_model)
-    @image_namespace.response(403, "Permission denied", message_model)
-    @image_namespace.response(404, "Image not found", message_model)
+    @images_namespace.doc(security="Bearer Auth")
+    @images_namespace.response(200, "Image deleted", message_model)
+    @images_namespace.response(403, "Permission denied", message_model)
+    @images_namespace.response(404, "Image not found", message_model)
     def delete(self, image_id):
         """
         Delete image by ID.
@@ -103,11 +103,11 @@ class ImageResource(Resource):
         return marshal({"message": "Image deleted"}, message_model), 200
 
 
-@image_namespace.route("/")
+@images_namespace.route("")
 class ImageListResource(Resource):
     @jwt_required(optional=True)
-    @image_namespace.doc(security="Bearer Auth")
-    @image_namespace.response(200, "Success", images_list_model)
+    @images_namespace.doc(security="Bearer Auth")
+    @images_namespace.response(200, "Success", images_list_model)
     def get(self):
         """
         Return a list of images.
@@ -130,10 +130,10 @@ class ImageListResource(Resource):
         )
 
     @jwt_required()
-    @image_namespace.doc(security="Bearer Auth")
-    @image_namespace.expect(image_parser)
-    @image_namespace.response(201, "Image created successfully", message_model)
-    @image_namespace.response(403, "Permission denied", message_model)
+    @images_namespace.doc(security="Bearer Auth")
+    @images_namespace.expect(image_parser)
+    @images_namespace.response(201, "Image created successfully", message_model)
+    @images_namespace.response(403, "Permission denied", message_model)
     def post(self):
         """
         Create a new image.
@@ -154,17 +154,17 @@ class ImageListResource(Resource):
         return (
             marshal({"message": "Image created successfully"}, message_model),
             201,
-            {"Location": f"/image/{image.id}"},
+            {"Location": f"/images/{image.id}"},
         )
 
 
-@image_namespace.route("/file/<int:image_id>")
+@images_namespace.route("/<int:image_id>/file")
 class ImageFileResource(Resource):
     @jwt_required(optional=True)
-    @image_namespace.doc(security="Bearer Auth")
-    @image_namespace.response(200, "Success")
-    @image_namespace.response(403, "Permission denied", message_model)
-    @image_namespace.response(404, "Image not found or file not found", message_model)
+    @images_namespace.doc(security="Bearer Auth")
+    @images_namespace.response(200, "Success")
+    @images_namespace.response(403, "Permission denied", message_model)
+    @images_namespace.response(404, "Image not found or file not found", message_model)
     def get(self, image_id):
         """
         Return the image file.
@@ -190,11 +190,11 @@ class ImageFileResource(Resource):
         )
 
     @jwt_required()
-    @image_namespace.doc(security="Bearer Auth")
-    @image_namespace.expect(file_parser)
-    @image_namespace.response(201, "Image uploaded", message_model)
-    @image_namespace.response(403, "Permission denied", message_model)
-    @image_namespace.response(404, "Image not found", message_model)
+    @images_namespace.doc(security="Bearer Auth")
+    @images_namespace.expect(file_parser)
+    @images_namespace.response(201, "Image uploaded", message_model)
+    @images_namespace.response(403, "Permission denied", message_model)
+    @images_namespace.response(404, "Image not found", message_model)
     def post(self, image_id):
         """
         Upload an image file.

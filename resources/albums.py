@@ -1,16 +1,16 @@
 from flask_restx import Namespace, Resource, reqparse, marshal
-from flask_jwt_extended import jwt_required, get_jwt_identity, current_user
+from flask_jwt_extended import jwt_required, current_user
 from models import album_model, albums_list_model, message_model
 from orm.album import AlbumORM
 from orm.image import ImageORM
 from extensions import db
 from sqlalchemy import or_
 
-album_namespace = Namespace("album", description="Album operations")
+albums_namespace = Namespace("albums", description="Album operations")
 
-album_namespace.add_model("Album", album_model)
-album_namespace.add_model("AlbumsList", albums_list_model)
-album_namespace.add_model("Message", message_model)
+albums_namespace.add_model("Album", album_model)
+albums_namespace.add_model("AlbumsList", albums_list_model)
+albums_namespace.add_model("Message", message_model)
 
 album_parser = reqparse.RequestParser()
 album_parser.add_argument(
@@ -34,15 +34,15 @@ album_parser.add_argument(
 )
 
 
-@album_namespace.route("/<int:album_id>")
-@album_namespace.param("album_id", "The album identifier")
+@albums_namespace.route("/<int:album_id>")
+@albums_namespace.param("album_id", "The album identifier")
 class AlbumResource(Resource):
 
     @jwt_required(optional=True)
-    @album_namespace.doc(security="Bearer Auth")
-    @album_namespace.response(200, "Success", album_model)
-    @album_namespace.response(403, "Permission denied", message_model)
-    @album_namespace.response(404, "Album not found", message_model)
+    @albums_namespace.doc(security="Bearer Auth")
+    @albums_namespace.response(200, "Success", album_model)
+    @albums_namespace.response(403, "Permission denied", message_model)
+    @albums_namespace.response(404, "Album not found", message_model)
     def get(self, album_id):
         """
         Get album by ID.
@@ -59,11 +59,11 @@ class AlbumResource(Resource):
         return marshal(album.to_dict(), album_model), 200
 
     @jwt_required()
-    @album_namespace.doc(security="Bearer Auth")
-    @album_namespace.expect(album_parser)
-    @album_namespace.response(200, "Album updated successfully", message_model)
-    @album_namespace.response(404, "Album not found", message_model)
-    @album_namespace.response(403, "Permission denied", message_model)
+    @albums_namespace.doc(security="Bearer Auth")
+    @albums_namespace.expect(album_parser)
+    @albums_namespace.response(200, "Album updated successfully", message_model)
+    @albums_namespace.response(404, "Album not found", message_model)
+    @albums_namespace.response(403, "Permission denied", message_model)
     def put(self, album_id):
         """
         Update album by ID.
@@ -87,10 +87,10 @@ class AlbumResource(Resource):
         return marshal({"message": "Album updated successfully"}, message_model), 200
 
     @jwt_required()
-    @album_namespace.doc(security="Bearer Auth")
-    @album_namespace.response(200, "Album deleted successfully", message_model)
-    @album_namespace.response(404, "Album not found", message_model)
-    @album_namespace.response(403, "Permission denied", message_model)
+    @albums_namespace.doc(security="Bearer Auth")
+    @albums_namespace.response(200, "Album deleted successfully", message_model)
+    @albums_namespace.response(404, "Album not found", message_model)
+    @albums_namespace.response(403, "Permission denied", message_model)
     def delete(self, album_id):
         """
         Delete album by ID.
@@ -108,11 +108,11 @@ class AlbumResource(Resource):
         return marshal({"message": "Album deleted successfully"}, message_model), 200
 
 
-@album_namespace.route("/")
+@albums_namespace.route("")
 class AlbumListResource(Resource):
     @jwt_required(optional=True)
-    @album_namespace.doc(security="Bearer Auth")
-    @album_namespace.response(200, "Success", albums_list_model)
+    @albums_namespace.doc(security="Bearer Auth")
+    @albums_namespace.response(200, "Success", albums_list_model)
     def get(self):
         """
         Get list of albums.
@@ -136,10 +136,10 @@ class AlbumListResource(Resource):
         )
 
     @jwt_required()
-    @album_namespace.doc(security="Bearer Auth")
-    @album_namespace.expect(album_parser)
-    @album_namespace.response(201, "Album created successfully", message_model)
-    @album_namespace.response(403, "Permission denied", message_model)
+    @albums_namespace.doc(security="Bearer Auth")
+    @albums_namespace.expect(album_parser)
+    @albums_namespace.response(201, "Album created successfully", message_model)
+    @albums_namespace.response(403, "Permission denied", message_model)
     def post(self):
         """
         Create a new album.
@@ -165,5 +165,5 @@ class AlbumListResource(Resource):
         return (
             marshal({"message": "Album created successfully"}, message_model),
             201,
-            {"Location": f"/album/{album.id}"},
+            {"Location": f"/albums/{album.id}"},
         )

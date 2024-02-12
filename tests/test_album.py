@@ -14,13 +14,13 @@ class TestAlbumAPI(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # 在测试开始前重置数据库
-        requests.get(f"{cls.BASE_URL}/utils/drop")
-        requests.get(f"{cls.BASE_URL}/utils/init")
+        requests.get(f"{cls.BASE_URL}/util/drop")
+        requests.get(f"{cls.BASE_URL}/util/init")
 
     def test_01_login(self):
         global GLOBAL_ACCESS_TOKEN, GLOBAL_REFRESH_TOKEN
         response = requests.post(
-            f"{self.BASE_URL}/user/login",
+            f"{self.BASE_URL}/session",
             json={"username": "admin", "password": "admin"},
         )
         self.assertEqual(response.status_code, 200)
@@ -30,7 +30,7 @@ class TestAlbumAPI(unittest.TestCase):
     def test_02_create_image1(self):
         global GLOBAL_IMAGE_ID1
         response = requests.post(
-            f"{self.BASE_URL}/image",
+            f"{self.BASE_URL}/images",
             headers={"Authorization": f"Bearer {GLOBAL_ACCESS_TOKEN}"},
             json={"description": "test", "visibility": 0},
         )
@@ -40,7 +40,7 @@ class TestAlbumAPI(unittest.TestCase):
     def test_03_create_image2(self):
         global GLOBAL_IMAGE_ID2
         response = requests.post(
-            f"{self.BASE_URL}/image",
+            f"{self.BASE_URL}/images",
             headers={"Authorization": f"Bearer {GLOBAL_ACCESS_TOKEN}"},
             json={"description": "test", "visibility": 0},
         )
@@ -50,7 +50,7 @@ class TestAlbumAPI(unittest.TestCase):
     def test_04_create_album(self):
         global GLOBAL_ALBUM_LOCATION
         response = requests.post(
-            f"{self.BASE_URL}/album",
+            f"{self.BASE_URL}/albums",
             headers={"Authorization": f"Bearer {GLOBAL_ACCESS_TOKEN}"},
             json={"album_name": "test", "description": "test", "visibility": 0, "images": [GLOBAL_IMAGE_ID1, GLOBAL_IMAGE_ID2]},
         )
@@ -95,8 +95,8 @@ class TestAlbumAPI(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_10_logout(self):
-        response = requests.post(
-            f"{self.BASE_URL}/user/logout",
+        response = requests.delete(
+            f"{self.BASE_URL}/session",
             headers={"Authorization": f"Bearer {GLOBAL_REFRESH_TOKEN}"},
         )
         self.assertEqual(response.status_code, 200)
